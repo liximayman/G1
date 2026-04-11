@@ -42,7 +42,7 @@
     <div class="tabs">
         <div class="tab-item active" onclick="openTab(event, 'kq')">KẾT QUẢ</div>
         <div class="tab-item" onclick="openTab(event, 'ghep')">GHÉP SỐ</div>
-        <div class="tab-item" onclick="openTab(event, 'xien')">XIÊN TỰ ĐỘNG</div>
+        <div class="tab-item" onclick="openTab(event, 'xien')">XIÊN GHÉP</div>
     </div>
 
     <div class="container">
@@ -154,6 +154,8 @@
 
     function copyDan() {
         const text = document.getElementById('display-dan').innerText;
+        btn.innerText = "COPIED ✓";
+            btn.style.background = "#2ecc71";
         if(text.includes(": ")) {
             navigator.clipboard.writeText(text.split(": ")[1]).then(() => alert("Đã copy dàn!"));
         }
