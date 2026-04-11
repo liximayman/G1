@@ -69,9 +69,11 @@
                 <button class="btn-num" onclick="selectQuick('dv', 'tatca')">Tất cả</button>
             </div>
 
-            <div id="display-dan">Dàn số: </div>
-            <button onclick="copyDan()" style="width: 100%; padding: 15px; background:var(--blue); border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer;">SAO CHÉP DÀN</button>
-        </div>
+            <div id="resultContainer" style="display:none;">
+                <div id="count" class="stats"></div>
+                <div id="output" class="result-box"></div>
+                <button id="copydanBtn" class="btn-copy-dan" onclick="copydan()">SAO CHÉP KẾT QUẢ</button>
+            </div>
 
         <div id="xien" class="panel">
             <h2 style="color: var(--secondary); font-size: 18px;">Ghép Xiên Thông Minh</h2>
@@ -153,10 +155,15 @@
     }
 
     function copyDan() {
-        const text = document.getElementById('display-dan').innerText;
-        if(text.includes(": ")) {
-            navigator.clipboard.writeText(text.split(": ")[1]).then(() => alert("Đã copy dàn!"));
-        }
+        navigator.clipboard.writeText(currentDanResult).then(() => {
+            const btn = document.getElementById('copyXDanBtn');
+            btn.innerText = "COPIED ✓";
+            btn.style.background = "#2ecc71";
+            setTimeout(() => {
+                btn.innerText = "SAO CHÉP KẾT QUẢ";
+                btn.style.background = "#3498db";
+            }, 1500);
+        });
     }
 
     // HÀM XỬ LÝ XIÊN TỰ ĐỘNG
