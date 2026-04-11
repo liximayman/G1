@@ -154,8 +154,6 @@
 
     function copyDan() {
         const text = document.getElementById('display-dan').innerText;
-        btn.innerText = "COPIED ✓";
-            btn.style.background = "#2ecc71";
         if(text.includes(": ")) {
             navigator.clipboard.writeText(text.split(": ")[1]).then(() => alert("Đã copy dàn!"));
         }
