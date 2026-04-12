@@ -142,14 +142,12 @@
         renderDan();
     }
 
-    functionfunction selectQuick(type, mode) {
+    function selectQuick(type, mode) {
         clearSet(type);
         for(let i=0; i<10; i++) {
-            if(mode==='tai' && i>=5) toggleNum(type, i);
-            else if(mode==='xiu' && i<5) toggleNum(type, i);
-            else if(mode==='le' && i%2!==0) toggleNum(type, i);
-            else if(mode==='chan' && i%2===0) toggleNum(type, i);
-            else if(mode==='tatca') toggleNum(type, i);
+            if((mode==='tai' && i>=5) || (mode==='xiu' && i<5) || (mode==='le' && i%2!==0) || (mode==='chan' && i%2===0) || mode==='tatca') {
+                toggleNum(type, i);
+            }
         }
     }
 
