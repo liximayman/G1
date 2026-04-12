@@ -165,14 +165,11 @@
         document.getElementById('display-dan').innerText = "Dàn (" + res.length + " số): " + res.join(", ");
     }
 
-    function copyDan() {
+    function copyToClipboard() {
         const text = document.getElementById('display-dan').innerText;
-        if(text.includes(": ")) {
-            navigator.clipboard.writeText(text.split(": ")[1]).then(() => alert("✅ Đã sao chép dàn số!"));
-        } else {
-            alert("Vui lòng chọn số trước!");
-        }
+        navigator.clipboard.writeText(text).then(() => alert("Đã sao chép!"));
     }
+    
     // HÀM XỬ LÝ XIÊN TỰ ĐỘNG
     function processXien() {
         const input = document.getElementById('inputNumbers').value;
