@@ -79,17 +79,19 @@
                 <button class="btn-num" style="background:#600;" onclick="clearSet('dv')">Xóa</button>
                 </div>
 
-            <div id="display-dan">Dàn số:
+            <div id="dan" class="panel">
             </div>
-            <button onclick="copyToClipboard()" style="width: 100%; padding: 15px; background:var(--blue); border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px;">SAO CHÉP DÀN</button>
-            </div>
+            <div id="count" class="stats"></div>
+                <div id="output" class="result-box"></div>
+                <button onclick="copyToClipboard()" style="width: 100%; padding: 15px; background:var(--blue); border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px;">SAO CHÉP DÀN</button>
+        </div>
 
         <div id="xien" class="panel">
             <h2 style="color: var(--secondary); font-size: 18px;">Ghép Xiên Thông Minh</h2>
             
             <div class="field-group">
                 <label>Nhập dãy số (Tự động ghép):</label>
-                <textarea id="inputNumbers" rows="3" placeholder="Ví dụ: 01 02 03 04 05" oninput="processXien()"></textarea>
+                <textarea id="copyXienBtn" rows="3" placeholder="Ví dụ: 01 02 03 04 05" oninput="processXien()"></textarea>
             </div>
 
             <div class="field-group">
@@ -162,14 +164,19 @@
         let chucArr = Array.from(chucSet).sort();
         let dvArr = Array.from(dvSet).sort();
         chucArr.forEach(c => dvArr.forEach(d => res.push(c + "" + d)));
-        document.getElementById('display-dan').innerText = "Dàn (" + res.length + " số): " + res.join(", ");
+        document.getElementById('cpyDanBtn').innerText = "Dàn (" + res.length + " số): " + res.join(", ");
     }
 
     function copyDan() {
-        const text = document.getElementById('display-dan').innerText;
-        if(text.includes(": ")) {
-            navigator.clipboard.writeText(text.split(": ")[1]).then(() => alert("Đã copy dàn!"));
-        }
+        navigator.clipboard.writeText(currentDanResult).then(() => {
+            const btn = document.getElementById('copyDanBtn');
+            btn.innerText = "COPIED ✓";
+            btn.style.background = "#2ecc71";
+            setTimeout(() => {
+                btn.innerText = "SAO CHÉP KẾT QUẢ";
+                btn.style.background = "#3498db";
+            }, 1500);
+        });
     }
 
     // HÀM XỬ LÝ XIÊN TỰ ĐỘNG
