@@ -166,9 +166,10 @@
     }
 
     function copyToClipboard() {
-        const text = document.getElementById('display-dan').innerText;
-        navigator.clipboard.writeText(text).then(() => alert("Đã sao chép!"));
-    }
+        
+        navigator.clipboard.writeText(currentDanResult).then(() => alert("COPIED ✓"))
+        const text = document.getElementById('copyDanBtn').innerText = "SAO CHÉP DÀN";
+        }
     
     // HÀM XỬ LÝ XIÊN TỰ ĐỘNG
     function processXien() {
