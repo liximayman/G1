@@ -24,10 +24,10 @@
         .btn-num { background: #333; border: 1px solid #444; color: white; padding: 12px 0; border-radius: 5px; font-size: 16px; cursor: pointer; }
         .btn-num.active { background: var(--secondary); border-color: #fff; }
         
-        #display-dan, .result-box { background: #000; padding: 15px; margin: 5px 0; border-radius: 8px; color: #00ff00; word-break: break-all; min-height: 50px; border: 1px dashed #555; font-family: monospace; font-size: 14px; }
-        .panel { display: none; }
-        .panel.active { display: block; }
-
+        #
+        .btn-copy-dan { width: 100%; padding: 15px; background: var(--blue); border: none; color: white; font-weight: bold; border-radius: 5px; margin-top: 10px; cursor: pointer; display:none; }
+        .stats { font-size: 13px; color: var(--secondary); margin-top: 5px; font-weight: bold; }
+    
         .field-group { margin-bottom: 15px; }
         .field-group label { display: block; margin-bottom: 5px; font-size: 14px; color: #bbb; font-weight: bold; }
         textarea, select { width: 100%; background: #252525; border: 1px solid #444; color: white; padding: 12px; border-radius: 5px; box-sizing: border-box; font-size: 16px; }
@@ -79,9 +79,12 @@
                 <button class="btn-num" style="background:#600;" onclick="clearSet('dv')">Xóa</button>
                 </div>
 
-            <div id="display-dan">Dàn số:
+            <div id="btn-copy-dan">Dàn số:
             </div>
-            <button onclick="copyToClipboard()" style="width: 100%; padding: 15px; background:var(--blue); border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px;">SAO CHÉP DÀN</button>
+            <div id="resultContainer" style="display:none;">
+                <div id="count" class="stats"></div>
+                <div id="output" class="result-box"></div>
+                <button id="copyDanBtn" class="btn-copy-dan" onclick="copyDan()">SAO CHÉP DÀN</button>
             </div>
 
         <div id="xien" class="panel">
@@ -162,14 +165,20 @@
         let chucArr = Array.from(chucSet).sort();
         let dvArr = Array.from(dvSet).sort();
         chucArr.forEach(c => dvArr.forEach(d => res.push(c + "" + d)));
-        document.getElementById('display-dan').innerText = "Dàn (" + res.length + " số): " + res.join(", ");
+        document.getElementById('btn-copy-dan').innerText = "Dàn (" + res.length + " số): " + res.join(", ");
     }
 
     function copyToClipboard() {
-        
-        navigator.clipboard.writeText(currentDanResult).then(() => alert("COPIED ✓"))
-        const text = document.getElementById('copyDanBtn').innerText = "SAO CHÉP DÀN";
-        }
+        navigator.clipboard.writeText(currentDanResult).then(() => {
+            const btn = document.getElementById('copyDanBtn');
+            btn.innerText = "COPIED ✓";
+            btn.style.background = "#2ecc71";
+            setTimeout(() => {
+                btn.innerText = "SAO CHÉP DÀN";
+                btn.style.background = "#3498db";
+            }, 1500);
+        });
+    }
     
     // HÀM XỬ LÝ XIÊN TỰ ĐỘNG
     function processXien() {
