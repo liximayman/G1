@@ -168,10 +168,11 @@
     function copyDan() {
         const text = document.getElementById('display-dan').innerText;
         if(text.includes(": ")) {
-            navigator.clipboard.writeText(text.split(": ")[1]).then(() => alert("Đã copy dàn!"));
+            navigator.clipboard.writeText(text.split(": ")[1]).then(() => alert("✅ Đã sao chép dàn số!"));
+        } else {
+            alert("Vui lòng chọn số trước!");
         }
     }
-
     // HÀM XỬ LÝ XIÊN TỰ ĐỘNG
     function processXien() {
         const input = document.getElementById('inputNumbers').value;
