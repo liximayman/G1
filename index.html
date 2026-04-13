@@ -67,7 +67,7 @@
             
             <div id="display-dan">Dàn số: (Trống)</div>
             
-            <button id="copyDanBtn" onclick="copyToClipboard()" style="width: 100%; padding: 15px; background:var(--blue); border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px;">SAO CHÉP DÀN</button>
+            <button id="copyDanBtn" onclick="copyToClipboard()" style="width: 100%; padding: 15px; background:var(--blue); border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px;">SAO CHÉP</button>
         </div>
 
         <div id="xien" class="panel">
@@ -91,7 +91,7 @@
             <div id="resultContainer" style="display:none;">
                 <div id="count" class="stats"></div>
                 <div id="output" class="result-box"></div>
-                <button id="copyXienBtn" class="btn-copy-xien" onclick="copyXien()">SAO CHÉP KẾT QUẢ</button>
+                <button id="copyXienBtn" class="btn-copy-xien" onclick="copyXien()">SAO CHÉP</button>
             </div>
         </div>
     </div>
@@ -159,7 +159,7 @@
         const cleanText = displayText.split(": ")[1];
         const btn = document.getElementById('copyDanBtn');
         navigator.clipboard.writeText(cleanText).then(() => {
-            btn.innerText = "COPIED ✓";
+            btn.innerText = "ĐÃ SAO CHÉP ✓";
             btn.style.background = "#2ecc71";
             setTimeout(() => { btn.innerText = "SAO CHÉP DÀN"; btn.style.background = "#3498db"; }, 1500);
         });
@@ -205,7 +205,7 @@
     function copyXien() {
         navigator.clipboard.writeText(currentXienResult).then(() => {
             const btn = document.getElementById('copyXienBtn');
-            btn.innerText = "COPIED ✓"; btn.style.background = "#2ecc71";
+            btn.innerText = "ĐÃ SAO CHÉP ✓"; btn.style.background = "#2ecc71";
             setTimeout(() => { btn.innerText = "SAO CHÉP KẾT QUẢ"; btn.style.background = "#3498db"; }, 1500);
         });
     }
