@@ -35,6 +35,17 @@
 
         .btn-copy-xien { width: 100%; padding: 15px; background: var(--blue); border: none; color: white; font-weight: bold; border-radius: 5px; margin-top: 10px; cursor: pointer; display:none; }
         .stats { font-size: 13px; color: var(--secondary); margin-top: 5px; font-weight: bold; }
+    
+    /* Hiệu ứng hiện ra nhẹ nhàng */
+ .panel {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateX(10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+        
     </style>
 </head>
 <body>
@@ -219,6 +230,47 @@
             }, 1500);
         });
     }
+    
+    // Biến lưu vị trí chạm
+let touchstartX = 0;
+let touchendX = 0;
+
+// Danh sách các tab theo thứ tự
+const tabOrder = ['kq', 'ghep', 'xien'];
+
+function handleGesture() {
+    const activeTab = document.querySelector('.tab-item.active').innerText;
+    // Tìm index hiện tại dựa trên text hoặc ID
+    let currentIndex = 0;
+    if (document.getElementById('kq').classList.contains('active')) currentIndex = 0;
+    if (document.getElementById('ghep').classList.contains('active')) currentIndex = 1;
+    if (document.getElementById('xien').classList.contains('active')) currentIndex = 2;
+
+    // Vuốt sang trái (Chuyển sang tab bên phải)
+    if (touchendX < touchstartX - 70) { 
+        if (currentIndex < tabOrder.length - 1) {
+            document.querySelectorAll('.tab-item')[currentIndex + 1].click();
+        }
+    }
+    
+    // Vuốt sang phải (Chuyển sang tab bên trái)
+    if (touchendX > touchstartX + 70) {
+        if (currentIndex > 0) {
+            document.querySelectorAll('.tab-item')[currentIndex - 1].click();
+        }
+    }
+}
+
+// Lắng nghe sự kiện trên toàn bộ body
+document.addEventListener('touchstart', e => {
+    touchstartX = e.changedTouches[0].screenX;
+}, false);
+
+document.addEventListener('touchend', e => {
+    touchendX = e.changedTouches[0].screenX;
+    handleGesture();
+}, false);
+    
 
     window.onload = initButtons;
 </script>
