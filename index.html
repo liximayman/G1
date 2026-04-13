@@ -125,6 +125,7 @@
     </div>
 
 <script>
+    <script>
     let chucSet = new Set(), dvSet = new Set();
     let currentXienResult = "";
     
@@ -137,14 +138,12 @@
     function initButtons() {
         const cGrid = document.getElementById('chuc-grid');
         const dGrid = document.getElementById('dv-grid');
-        cGrid.innerHTML = ''; // Xóa cũ trước khi tạo mới
+        cGrid.innerHTML = ''; 
         dGrid.innerHTML = '';
         for(let i=0; i<10; i++) {
             cGrid.innerHTML += `<button class="btn-num" id="c-${i}" onclick="toggleNum('chuc', ${i})">${i}</button>`;
             dGrid.innerHTML += `<button class="btn-num" id="d-${i}" onclick="toggleNum('dv', ${i})">${i}</button>`;
         }
-        
-        // Khởi tạo sự kiện vuốt trên toàn màn hình
         initSwipeEvents();
     }
 
@@ -153,7 +152,6 @@
         document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
         document.getElementById(tabName).classList.add('active');
         
-        // Tìm tab-item tương ứng để active
         const tabs = document.querySelectorAll('.tab-item');
         if(tabName === 'kq') tabs[0].classList.add('active');
         else if(tabName === 'ghep') tabs[1].classList.add('active');
@@ -163,20 +161,54 @@
     function toggleNum(type, n) {
         let set = (type === 'chuc') ? chucSet : dvSet;
         let id = (type === 'chuc') ? `c-${n}` : `d-${n}`;
+        
         if(set.has(n)) set.delete(n); else set.add(n);
         
         const btn = document.getElementById(id);
         if(btn) btn.classList.toggle('active');
-        renderDan();
+        
+        renderDan(); // Gọi hàm cập nhật hiển thị ngay lập tức
+    }
+
+    function renderDan() {
+        let res = [];
+        let chucArr = Array.from(chucSet).sort();
+        let dvArr = Array.from(dvSet).sort();
+        
+        // Tạo dàn số
+        chucArr.forEach(c => {
+            dvArr.forEach(d => {
+                res.push(c + "" + d);
+            });
+        });
+        
+        const display = document.getElementById('display-dan');
+        if (res.length > 0) {
+            display.innerText = "Dàn (" + res.length + " số): " + res.join(", ");
+        } else {
+            display.innerText = "Dàn số: (Trống)";
+        }
     }
 
     function selectQuick(type, mode) {
-        clearSet(type);
+        // Xóa lựa chọn cũ của hàng đó trước khi chọn nhanh
+        if(type==='chuc') { 
+            chucSet.clear(); 
+            document.querySelectorAll('#chuc-grid .btn-num').forEach(b=>b.classList.remove('active')); 
+        } else { 
+            dvSet.clear(); 
+            document.querySelectorAll('#dv-grid .btn-num').forEach(b=>b.classList.remove('active')); 
+        }
+
         for(let i=0; i<10; i++) {
             if((mode==='tai' && i>=5) || (mode==='xiu' && i<5) || (mode==='le' && i%2!==0) || (mode==='chan' && i%2===0) || mode==='tatca') {
-                toggleNum(type, i);
+                let set = (type === 'chuc') ? chucSet : dvSet;
+                let id = (type === 'chuc') ? `c-${i}` : `d-${i}`;
+                set.add(i);
+                document.getElementById(id).classList.add('active');
             }
         }
+        renderDan();
     }
 
     function clearSet(type) {
@@ -190,24 +222,34 @@
         renderDan();
     }
 
-    function renderDan() {
-        let res = [];
-        let chucArr = Array.from(chucSet).sort();
-        let dvArr = Array.from(dvSet).sort();
-        chucArr.forEach(c => dvArr.forEach(d => res.push(c + "" + d)));
-        
-        const display = document.getElementById('display-dan');
-        if (res.length > 0) {
-            display.innerText = "Dàn (" + res.length + " số): " + res.join(", ");
-        } else {
-            display.innerText = "Dàn số: (Trống)";
+    // HÀM SAO CHÉP DÀN SỐ (Đã đồng bộ hiệu ứng với Xiên)
+    function copyToClipboard() {
+        const displayText = document.getElementById('display-dan').innerText;
+        if (displayText.includes("(Trống)")) {
+            alert("Chưa có số để sao chép!");
+            return;
         }
+
+        const cleanText = displayText.split(": ")[1];
+        const btn = document.getElementById('copyDanBtn');
+
+        navigator.clipboard.writeText(cleanText).then(() => {
+            const oldText = "SAO CHÉP DÀN";
+            btn.innerText = "COPIED ✓";
+            btn.style.background = "#2ecc71";
+            setTimeout(() => {
+                btn.innerText = oldText;
+                btn.style.background = "#3498db";
+            }, 1500);
+        }).catch(() => {
+            // Trường hợp lỗi (trình duyệt chặn), dùng mẹo nhỏ:
+            alert("Đã xảy ra lỗi khi sao chép. Hãy thử lại!");
+        });
     }
 
     // TÍNH NĂNG VUỐT MÀN HÌNH
     function initSwipeEvents() {
         const tabs = ['kq', 'ghep', 'xien'];
-        
         document.addEventListener('touchstart', e => {
             touchstartX = e.changedTouches[0].screenX;
             touchstartY = e.changedTouches[0].screenY;
@@ -216,110 +258,34 @@
         document.addEventListener('touchend', e => {
             touchendX = e.changedTouches[0].screenX;
             touchendY = e.changedTouches[0].screenY;
-            
             const xDist = touchendX - touchstartX;
             const yDist = touchendY - touchstartY;
 
-            // Nếu vuốt ngang > 80px và không phải đang cuộn dọc
             if (Math.abs(xDist) > Math.abs(yDist) && Math.abs(xDist) > 80) {
                 let activePanel = document.querySelector('.panel.active').id;
                 let currentIndex = tabs.indexOf(activePanel);
-
-                if (xDist < 0 && currentIndex < tabs.length - 1) {
-                    // Vuốt trái -> Sang phải
-                    openTab(null, tabs[currentIndex + 1]);
-                } else if (xDist > 0 && currentIndex > 0) {
-                    // Vuốt phải -> Sang trái
-                    openTab(null, tabs[currentIndex - 1]);
-                }
+                if (xDist < 0 && currentIndex < tabs.length - 1) openTab(null, tabs[currentIndex + 1]);
+                else if (xDist > 0 && currentIndex > 0) openTab(null, tabs[currentIndex - 1]);
             }
         }, {passive: true});
     }
 
-    function copyToClipboard() {
-    const displayText = document.getElementById('display-dan').innerText;
-    
-    // 1. Kiểm tra dàn trống
-    if (!displayText || displayText.includes("(Trống)")) {
-        alert("Chưa có số để sao chép!");
-        return;
-    }
-
-    // 2. Lấy dữ liệu số (loại bỏ phần tiêu đề "Dàn (xx số): ")
-    let cleanText = "";
-    if (displayText.includes(": ")) {
-        cleanText = displayText.split(": ")[1];
-    } else {
-        cleanText = displayText;
-    }
-
-    const btn = document.getElementById('copyDanBtn');
-
-    // 3. Xử lý sao chép (Hỗ trợ cả Navigator API và ExecCommand)
-    if (navigator.clipboard && window.isSecureContext) {
-        // Cách hiện đại cho HTTPS hoặc localhost
-        navigator.clipboard.writeText(cleanText).then(() => {
-            showSuccessEffect(btn);
-        }).catch(() => {
-            copyFallback(cleanText, btn);
-        });
-    } else {
-        // Cách truyền thống cho HTTP hoặc trình duyệt cũ
-        copyFallback(cleanText, btn);
-    }
-}
-
-// Hàm tạo hiệu ứng đổi màu nút y hệt bên Xiên
-function showSuccessEffect(btn) {
-    const oldText = "SAO CHÉP DÀN";
-    btn.innerText = "COPIED ✓";
-    btn.style.background = "#2ecc71"; // Màu xanh lá
-
-    setTimeout(() => {
-        btn.innerText = oldText;
-        btn.style.background = "#3498db"; // Màu xanh dương ban đầu
-    }, 1500);
-}
-
-// Hàm dự phòng (Fallback) khi trình duyệt chặn Clipboard API
-function copyFallback(text, btn) {
-    const textArea = document.createElement("textarea");
-    textArea.value = text;
-    document.body.appendChild(textArea);
-    textArea.select();
-    try {
-        document.execCommand('copy');
-        showSuccessEffect(btn);
-    } catch (err) {
-        alert('Lỗi: Không thể sao chép. Hãy sao chép thủ công!');
-    }
-    document.body.removeChild(textArea);
-}
-
-function processXien() {
+    // CÁC HÀM XIÊN GHÉP
+    function processXien() {
         const input = document.getElementById('inputNumbers').value;
         const exclude = document.getElementById('excludeNumbers').value;
         const size = parseInt(document.getElementById('xienType').value);
-        
         let numbers = [...new Set(input.split(/[\s, \n, .]+/).filter(n => n.length > 0))];
         let excludeList = exclude.split(/[\s, \n, .]+/).filter(n => n.length > 0);
         numbers = numbers.filter(n => !excludeList.includes(n));
 
         const container = document.getElementById('resultContainer');
-        if (numbers.length < size) {
-            container.style.display = 'none';
-            return;
-        }
+        if (numbers.length < size) { container.style.display = 'none'; return; }
 
         let results = [];
         function combine(start, path) {
-            if (path.length === size) {
-                results.push(path.join("-"));
-                return;
-            }
-            for (let i = start; i < numbers.length; i++) {
-                combine(i + 1, [...path, numbers[i]]);
-            }
+            if (path.length === size) { results.push(path.join("-")); return; }
+            for (let i = start; i < numbers.length; i++) combine(i + 1, [...path, numbers[i]]);
         }
         combine(0, []);
 
@@ -344,9 +310,3 @@ function processXien() {
 
     window.onload = initButtons;
 </script>
-
-
-     window.onload = initButtons;
-</script>
-</body>
-</html>
