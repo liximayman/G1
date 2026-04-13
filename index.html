@@ -37,16 +37,17 @@
         .stats { font-size: 13px; color: var(--secondary); margin-top: 5px; font-weight: bold; }
     
     /* Hiệu ứng hiện ra nhẹ nhàng */
- .panel {
-    display: none;
-    animation: fadeIn 0.3s ease;
+ .panel.active {
+    display: block;
+    animation: slideIn 0.2s ease-out;
 }
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateX(10px); }
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(20px); }
     to { opacity: 1; transform: translateX(0); }
 }
-        
-    </style>
+
+</style>
 </head>
 <body>
     
@@ -231,45 +232,59 @@
         });
     }
     
-    // Biến lưu vị trí chạm
-let touchstartX = 0;
-let touchendX = 0;
+    // Cấu hình vùng nhận diện vuốt
+    let touchstartX = 0;
+    let touchendX = 0;
+    let touchstartY = 0;
+    let touchendY = 0;
 
-// Danh sách các tab theo thứ tự
-const tabOrder = ['kq', 'ghep', 'xien'];
-
-function handleGesture() {
-    const activeTab = document.querySelector('.tab-item.active').innerText;
-    // Tìm index hiện tại dựa trên text hoặc ID
-    let currentIndex = 0;
-    if (document.getElementById('kq').classList.contains('active')) currentIndex = 0;
-    if (document.getElementById('ghep').classList.contains('active')) currentIndex = 1;
-    if (document.getElementById('xien').classList.contains('active')) currentIndex = 2;
-
-    // Vuốt sang trái (Chuyển sang tab bên phải)
-    if (touchendX < touchstartX - 70) { 
-        if (currentIndex < tabOrder.length - 1) {
-            document.querySelectorAll('.tab-item')[currentIndex + 1].click();
-        }
-    }
+    // Lấy danh sách các tab đang có trong giao diện của bạn
+    const tabElements = document.querySelectorAll('.tab-item');
     
-    // Vuốt sang phải (Chuyển sang tab bên trái)
-    if (touchendX > touchstartX + 70) {
-        if (currentIndex > 0) {
-            document.querySelectorAll('.tab-item')[currentIndex - 1].click();
+    function handleGesture() {
+        // Tính toán khoảng cách vuốt theo phương ngang và dọc
+        const xDist = touchendX - touchstartX;
+        const yDist = touchendY - touchstartY;
+
+        // Chỉ xử lý nếu vuốt ngang mạnh hơn vuốt dọc (tránh nhầm lẫn khi cuộn trang)
+        // Khoảng cách vuốt ngang phải > 70px để tránh chạm nhầm
+        if (Math.abs(xDist) > Math.abs(yDist) && Math.abs(xDist) > 70) {
+            
+            // Tìm vị trí của tab đang hoạt động (active)
+            let currentIndex = 0;
+            tabElements.forEach((tab, index) => {
+                if (tab.classList.contains('active')) {
+                    currentIndex = index;
+                }
+            });
+
+            if (xDist < 0) {
+                // Vuốt từ phải sang trái -> Chuyển sang tab tiếp theo
+                if (currentIndex < tabElements.length - 1) {
+                    tabElements[currentIndex + 1].click();
+                }
+            } else {
+                // Vuốt từ trái sang phải -> Quay lại tab trước đó
+                if (currentIndex > 0) {
+                    tabElements[currentIndex - 1].click();
+                }
+            }
         }
     }
-}
 
-// Lắng nghe sự kiện trên toàn bộ body
-document.addEventListener('touchstart', e => {
-    touchstartX = e.changedTouches[0].screenX;
-}, false);
+    // Gắn sự kiện lắng nghe trên toàn bộ tài liệu (document)
+    document.addEventListener('touchstart', e => {
+        touchstartX = e.changedTouches[0].screenX;
+        touchstartY = e.changedTouches[0].screenY;
+    }, {passive: true});
 
-document.addEventListener('touchend', e => {
-    touchendX = e.changedTouches[0].screenX;
-    handleGesture();
-}, false);
+    document.addEventListener('touchend', e => {
+        touchendX = e.changedTouches[0].screenX;
+        touchendY = e.changedTouches[0].screenY;
+        handleGesture();
+    }, {passive: true});
+</script>
+
     
 
     window.onload = initButtons;
