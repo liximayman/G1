@@ -13,37 +13,42 @@
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg-dark); color: var(--text); margin: 0; padding-bottom: 60px; }
         .container { max-width: 600px; margin: auto; padding: 10px; }
         .tabs { display: flex; background: #000; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 100; }
-        .tab-item { flex: 1; padding: 15px 5px; text-align: center; cursor: pointer; font-size: 13px; font-weight: bold; color: #888; }
+        .tab-item { flex: 1; padding: 15px 5px; text-align: center; cursor: pointer; font-size: 14px; font-weight: bold; color: #888; }
         .tab-item.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
-        .live-box { width: 100%; height: 1500px; overflow: hidden; position: relative; background: #fff; border-radius: 8px; margin-top: 10px; }
-        .live-box iframe { position: absolute; top: -80px; left: 0; width: 100%; height: 50px; border: none; }
+        
+        /* Box kết quả thu nhỏ lại một chút để dễ cuộn */
+        .live-box { width: 100%; height: 500px; overflow-y: auto; overflow-x: hidden; position: relative; background: #fff; border-radius: 8px; margin-bottom: 20px; border: 2px solid #333; }
+        .live-box iframe { width: 100%; height: 1500px; border: none; margin-top: -80px; }
+
         .grid-num { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; padding: 5px 0; }
-        .btn-num { background: #333; border: 1px solid #444; color: white; padding: 5px 0; border-radius: 5px; font-size: 15px; cursor: pointer; }
-        .btn-num.active { background: var(--secondary); border-color: #fff; }
+        .btn-num { background: #333; border: 1px solid #444; color: white; padding: 8px 0; border-radius: 5px; font-size: 16px; cursor: pointer; }
+        .btn-num.active { background: var(--secondary); border-color: #fff; box-shadow: 0 0 5px var(--secondary); }
+        
         #display-dan, .result-box { background: #000; padding: 10px; margin: 10px 0; border-radius: 8px; color: #00ff00; word-break: break-all; min-height: 50px; border: 1px dashed #555; font-family: monospace; font-size: 15px; line-height: 1.4; }
         .panel { display: none; }
         .panel.active { display: block; animation: slideIn 0.2s ease-out; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
         .field-group { margin-bottom: 15px; }
         .field-group label { display: block; margin-bottom: 5px; font-size: 15px; color: #bbb; font-weight: bold; }
-        textarea, select { width: 100%; background: #252525; border: 1px solid #444; color: white; padding: 8px; border-radius: 5px; box-sizing: border-box; font-size: 15px; }
-        .btn-copy-xien { width: 100%; padding: 15px; background: var(--blue); border: none; color: white; font-weight: bold; border-radius: 5px; margin-top: 10px; cursor: pointer; }
+        textarea, select { width: 100%; background: #252525; border: 1px solid #444; color: white; padding: 10px; border-radius: 5px; box-sizing: border-box; font-size: 15px; }
+        .btn-main { width: 100%; padding: 15px; background: var(--blue); border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px; }
         .stats { font-size: 13px; color: var(--secondary); margin-top: 5px; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="tabs">
-        <div class="tab-item active" onclick="openTab(event, 'main-tool')">KẾT QUẢ & GHÉP SỐ</div>
-            <div class="tab-item" onclick="openTab(event, 'xien')">XIÊN GHÉP</div>
-        </div>
+        <div class="tab-item active" onclick="openTab(event, 'main-panel')">SOI CẦU & GHÉP</div>
+        <div class="tab-item" onclick="openTab(event, 'xien-panel')">XIÊN GHÉP</div>
+    </div>
 
     <div class="container">
-        <div id="kq" class="panel active">
-            <div class="live-box"><iframe src="https://az24.vn/xsmb-30-ngay.html"></iframe></div>
-        </div>
+        <div id="main-panel" class="panel active">
+            <div class="live-box">
+                <iframe src="https://az24.vn/xsmb-30-ngay.html"></iframe>
+            </div>
 
-        <div id="ghep" class="panel">
-            <h4 style="margin: 5px 0;">ĐẦU (Hàng chục)</h4>
+            <h4 style="margin: 10px 0 5px 0; color: var(--primary);">ĐẦU (Hàng chục)</h4>
             <div class="grid-num" id="chuc-grid"></div>
             <div class="grid-num" style="grid-template-columns: repeat(3, 1fr); padding-top:0;">
                 <button class="btn-num" style="background:#FF4500;" onclick="selectQuick('chuc', 'tatca')">Tất cả</button>
@@ -53,7 +58,8 @@
                 <button class="btn-num" onclick="selectQuick('chuc', 'chan')">Chẵn</button>
                 <button class="btn-num" style="background:#600;" onclick="clearSet('chuc')">Xóa</button>
             </div>
-            <h4 style="margin: 5px 0;">ĐUÔI (Hàng đơn vị)</h4>
+
+            <h4 style="margin: 15px 0 5px 0; color: var(--primary);">ĐUÔI (Hàng đơn vị)</h4>
             <div class="grid-num" id="dv-grid"></div>
             <div class="grid-num" style="grid-template-columns: repeat(3, 1fr); padding-top:0;">
                 <button class="btn-num" style="background:#FF4500;" onclick="selectQuick('dv', 'tatca')">Tất cả</button>
@@ -65,11 +71,10 @@
             </div>
             
             <div id="display-dan">Dàn số: (Trống)</div>
-            
-            <button id="copyDanBtn" onclick="copyToClipboard()" style="width: 100%; padding: 15px; background:var(--blue); border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px;">SAO CHÉP</button>
+            <button id="copyDanBtn" class="btn-main" onclick="copyToClipboard()">SAO CHÉP DÀN</button>
         </div>
 
-        <div id="xien" class="panel">
+        <div id="xien-panel" class="panel">
             <h2 style="color: var(--secondary); font-size: 18px;">Ghép Xiên Thông Minh</h2>
             <div class="field-group">
                 <label>Nhập dãy số:</label>
@@ -90,7 +95,7 @@
             <div id="resultContainer" style="display:none;">
                 <div id="count" class="stats"></div>
                 <div id="output" class="result-box"></div>
-                <button id="copyXienBtn" class="btn-copy-xien" onclick="copyXien()">SAO CHÉP</button>
+                <button id="copyXienBtn" class="btn-main" style="background: var(--blue);" onclick="copyXien()">SAO CHÉP KẾT QUẢ</button>
             </div>
         </div>
     </div>
@@ -98,7 +103,7 @@
 <script>
     let chucSet = new Set(), dvSet = new Set();
     let currentXienResult = "";
-    let touchstartX = 0, touchstartY = 0, touchendX = 0, touchendY = 0;
+    let touchstartX = 0, touchendX = 0;
 
     function initButtons() {
         const cGrid = document.getElementById('chuc-grid');
@@ -114,10 +119,12 @@
         document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
         document.getElementById(tabName).classList.add('active');
-        const tabs = document.querySelectorAll('.tab-item');
-        if(tabName === 'kq') tabs[0].classList.add('active');
-        else if(tabName === 'ghep') tabs[1].classList.add('active');
-        else if(tabName === 'xien') tabs[2].classList.add('active');
+        if (evt) {
+            evt.currentTarget.classList.add('active');
+        } else {
+            const index = tabName === 'main-panel' ? 0 : 1;
+            document.querySelectorAll('.tab-item')[index].classList.add('active');
+        }
     }
 
     function toggleNum(type, n) {
@@ -158,23 +165,20 @@
         const cleanText = displayText.split(": ")[1];
         const btn = document.getElementById('copyDanBtn');
         navigator.clipboard.writeText(cleanText).then(() => {
-            btn.innerText = "ĐÃ SAO CHÉP ✓";
+            btn.innerText = "COPIED ✓";
             btn.style.background = "#2ecc71";
             setTimeout(() => { btn.innerText = "SAO CHÉP DÀN"; btn.style.background = "#3498db"; }, 1500);
         });
     }
 
     function initSwipeEvents() {
-        const tabs = ['kq', 'ghep', 'xien'];
-        document.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; touchstartY = e.changedTouches[0].screenY; }, {passive: true});
+        document.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; }, {passive: true});
         document.addEventListener('touchend', e => {
-            touchendX = e.changedTouches[0].screenX; touchendY = e.changedTouches[0].screenY;
-            const xDist = touchendX - touchstartX, yDist = touchendY - touchstartY;
-            if (Math.abs(xDist) > Math.abs(yDist) && Math.abs(xDist) > 80) {
-                let activePanel = document.querySelector('.panel.active').id;
-                let currentIndex = tabs.indexOf(activePanel);
-                if (xDist < 0 && currentIndex < tabs.length - 1) openTab(null, tabs[currentIndex + 1]);
-                else if (xDist > 0 && currentIndex > 0) openTab(null, tabs[currentIndex - 1]);
+            touchendX = e.changedTouches[0].screenX;
+            const xDist = touchendX - touchstartX;
+            if (Math.abs(xDist) > 100) {
+                if (xDist < 0) openTab(null, 'xien-panel');
+                else openTab(null, 'main-panel');
             }
         }, {passive: true});
     }
@@ -198,13 +202,12 @@
         container.style.display = 'block';
         document.getElementById('output').innerText = results.join(", ");
         document.getElementById('count').innerText = `✓ Đã ghép thành công: ${results.length} cặp xiên ${size}`;
-        document.getElementById('copyXienBtn').style.display = 'block';
     }
 
     function copyXien() {
         navigator.clipboard.writeText(currentXienResult).then(() => {
             const btn = document.getElementById('copyXienBtn');
-            btn.innerText = "ĐÃ SAO CHÉP ✓"; btn.style.background = "#2ecc71";
+            btn.innerText = "COPIED ✓"; btn.style.background = "#2ecc71";
             setTimeout(() => { btn.innerText = "SAO CHÉP KẾT QUẢ"; btn.style.background = "#3498db"; }, 1500);
         });
     }
