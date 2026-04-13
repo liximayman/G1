@@ -91,10 +91,8 @@
                 <button class="btn-num" style="background:#600;" onclick="clearSet('dv')">Xóa</button>
                 </div>
 
-            <div id="display-dan">Dàn số:
-            </div>
-            <button onclick="copyToClipboard()" style="width: 100%; padding: 15px; background:var(--blue); border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px;">SAO CHÉP DÀN</button>
-            </div>
+            <button id="copyDanBtn" onclick="copyToClipboard()" style="width: 100%; padding: 15px; background:var(--blue); border: none; color: white; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px; transition: 0.3s;">SAO CHÉP DÀN</button>
+       </div>
 
         <div id="xien" class="panel">
             <h2 style="color: var(--secondary); font-size: 18px;">Ghép Xiên Thông Minh</h2>
@@ -239,12 +237,36 @@
     }
 
     function copyToClipboard() {
-        const text = document.getElementById('display-dan').innerText;
-        if(text.includes("(Trống)")) return alert("Chưa có số để sao chép!");
-        navigator.clipboard.writeText(text.replace("Dàn (", "").replace(/.*?\): /, "")).then(() => alert("Đã sao chép dàn số!"));
+    const displayText = document.getElementById('display-dan').innerText;
+    
+    // Kiểm tra nếu dàn trống
+    if (displayText.includes("(Trống)")) {
+        alert("Chưa có số để sao chép!");
+        return;
     }
 
-    function processXien() {
+    // Tách lấy dãy số (bỏ phần "Dàn (xx số): ")
+    const cleanText = displayText.split(": ")[1];
+    const btn = document.getElementById('copyDanBtn');
+
+    navigator.clipboard.writeText(cleanText).then(() => {
+        // Hiệu ứng phản hồi y hệt copy xiên
+        const oldText = btn.innerText;
+        const oldBg = btn.style.background;
+
+        btn.innerText = "COPIED ✓";
+        btn.style.background = "#2ecc71"; // Màu xanh lá giống bên xiên
+
+        setTimeout(() => {
+            btn.innerText = oldText;
+            btn.style.background = oldBg; // Trả về màu xanh dương ban đầu
+        }, 1500);
+    }).catch(err => {
+        console.error('Lỗi khi sao chép: ', err);
+    });
+}
+
+     function processXien() {
         const input = document.getElementById('inputNumbers').value;
         const exclude = document.getElementById('excludeNumbers').value;
         const size = parseInt(document.getElementById('xienType').value);
